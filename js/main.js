@@ -28,29 +28,33 @@ document.addEventListener("DOMContentLoaded", function () {
         listItem.appendChild(closeBtn);
 
         listItemsContainer.querySelector('ul').appendChild(listItem);
+        
+        countItemList();
     });
 
     listItemsContainer.addEventListener("click", function (event) {
         if (event.target.classList.contains("btn-close")) {
             event.target.closest('li').remove();
+            countItemList().itemCount - 1;
         }
     });
 });
+
+function countItemList() {
+    var itemList = document.querySelectorAll('.list-group-item');
+    
+    var itemCount = itemList.length - 1;
+    
+    var countElement = document.getElementById('count');
+    countElement.textContent = itemCount;
+}
+
 
 document.addEventListener('DOMContentLoaded', function () {
     var submitBtn = document.getElementById('submitListItem');
     var nameInput = document.getElementById('name');
     var phoneInput = document.getElementById('phone');
     var modalBody = document.getElementById('modalBody');
-
-    var popover = new bootstrap.Popover(document.getElementById('addItemBtn'), {
-        toggle: 'popover',
-        placement: 'right',
-        container: 'body',
-        content: function () {
-            return "Please add request item to list item!";
-        }
-    });
 
     submitBtn.addEventListener('click', function (event) {
         event.preventDefault();
@@ -76,7 +80,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 var guestModal = new bootstrap.Modal(document.getElementById('submitModal'));
                 guestModal.show();
 
-                popover.hide();
+                var selectedItem = document.getElementById('item');
+                var quantity = document.getElementById('quantity');
+
+                selectedItem.classList.remove('is-invalid');
+                quantity.classList.remove('is-invalid');
 
                 console.log(itemsData);
             } else {
@@ -86,7 +94,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedItem.classList.add('is-invalid');
                 quantity.classList.add('is-invalid');
 
+                var popover = new bootstrap.Popover(document.getElementById('addItemBtn'), {
+                    toggle: 'popover',
+                    placement: 'right',
+                    container: 'body',
+                    trigger: 'focus',
+                    content: function () {
+                        return "Add request item to list item!";
+                    }        
+                });
+
                 popover.show();
+            
+                setTimeout(function() {
+                    popover.hide();
+                }, 1500);
             }
         }
     });
@@ -95,15 +117,19 @@ document.addEventListener('DOMContentLoaded', function () {
         var itemList = document.querySelectorAll('.list-group-item');
         var itemsData = [];
 
-        itemList.forEach(function (item) {
+        for (var i = 0; i < itemList.length; i++) {
+            var item = itemList[i];
             var itemName = item.querySelector('h6').textContent;
             var quantity = item.querySelector('.text-body-secondary').textContent;
-
+    
             itemsData.push({ name: itemName, quantity: quantity });
-        });
+        }
 
         return itemsData;
     }
+
+
+    countItemList();
 });
 
 
